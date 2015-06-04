@@ -13,6 +13,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
@@ -27,6 +30,45 @@ import android.util.Log;
 
 	private static final String TAG = "GCM";
 	private NotificationManager notifManager;
+	
+
+	public static final String REG_ID = "regId";
+	private static final String APP_VERSION = "appVersion";
+	private static final String MyPrefs = "MyPrefs";
+	
+	private static int getAppVersion(Context context) {
+		try {
+			PackageInfo packageInfo = context.getPackageManager()
+					.getPackageInfo(context.getPackageName(), 0);
+			return packageInfo.versionCode;
+		} catch (NameNotFoundException e) {
+			Log.d(TAG,
+					"RA : I never expected this! Going down, going down!" + e);
+			throw new RuntimeException(e);
+		}
+	}
+	
+	
+	
+	public String getStoredId()
+	{
+		final SharedPreferences prefs = getSharedPreferences(MyPrefs, MODE_PRIVATE);
+		String regID = prefs.getString(REG_ID, "");
+		
+		if(regID.isEmpty())
+		{
+			return "";
+		}
+		
+		int registeredVersion = prefs.getInt(APP_VERSION, Integer.MIN_VALUE);
+		int currentVersion = getAppVersion(getApplicationContext());
+		if (registeredVersion != currentVersion) {
+			Log.i(TAG, "RA : App version changed.");
+			return "";
+		}
+		return regID;
+	}
+	
 	
 	public GCMNotificationIntentService() {
 		super("GCMIntentService");
@@ -77,7 +119,7 @@ import android.util.Log;
 			bu.setContentText(msgobj.getMessage());
 			bu.setSmallIcon(R.drawable.rat);
 			bu.setSound(alarmSound);
-			bu.setLargeIcon(ratbmp);
+			
 			bu.setContentIntent(msgViewIntent);
 			notif = bu.build();
 		}
@@ -116,6 +158,7 @@ import android.util.Log;
     			String id = extras.getString(ServerUtility.MESSAGE_ID);
     			Log.i(TAG,"DATA IS - "+id+" : "+title+" : "+msgText+" : "+time);
     			sendNotification(Integer.parseInt(id),title,msgText,time);
+    			ServerUtility.acknowledgeReceipt(Integer.parseInt(id), getStoredId());
     		}
     		GCMBroadcastReceiver.completeWakefulIntent(intent);
     	}

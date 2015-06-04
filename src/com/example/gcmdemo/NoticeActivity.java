@@ -72,13 +72,24 @@ public class NoticeActivity extends Activity implements
 
 	public void loadMessages()
 	{
+		Log.i(TAG,"Messages being loaded !");
 		MessageUtility utility = new MessageUtility(this);
 		utility.open();
 		final ArrayList<Message> messages = (ArrayList<Message>) utility.getAllMessages();
 		utility.close();
 		Log.i(TAG,"Number of messages : "+messages.size());
 		ExpandableListAdapter adapter = new ExpandableListAdapter(getApplicationContext(), messages);
-		messageView.setAdapter(adapter);
+		if(messageView != null)
+		{
+			messageView.setAdapter(adapter);
+			Log.i(TAG,"Success when messageview not null");
+		}
+		else
+		{
+			messageView = (ExpandableListView)findViewById(R.id.expandableListView1);	
+			messageView.setAdapter(adapter);
+			Log.i(TAG,"Success when messageview null");
+		}
 	}
 	
 	
@@ -191,7 +202,7 @@ public class NoticeActivity extends Activity implements
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		//loadMessages();
+		loadMessages();
 		//Log.i(TAG,"On Resume called");
 	}
 	

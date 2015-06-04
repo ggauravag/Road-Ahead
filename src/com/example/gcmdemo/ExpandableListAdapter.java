@@ -26,6 +26,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	}
 	
 	
+	public void setList(ArrayList<Message> messages)
+	{
+		this.messages = messages;
+	}
+	
+	
 	@Override
 	public Object getChild(int arg0, int arg1) {
 		// TODO Auto-generated method stub

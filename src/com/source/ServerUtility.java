@@ -11,12 +11,17 @@ import java.net.URLEncoder;
 
 import org.json.JSONObject;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.JsonReader;
 import android.util.Log;
 
 public class ServerUtility 
 {
 	public static final String REGISTER_URL = "http://www.webservice.dreambit.in/AndroidRegister.aspx";
+	
+
+	
 	
 	public static final String TAG = "GCM";
 	
@@ -35,6 +40,8 @@ public class ServerUtility
 	public static final String DATA_URL = "http://www.webservice.dreambit.in/AndroidData.aspx";
 	
 	public static final String GOOGLE_ID = "1008548012532";
+	
+	
 	
 	
 	public static void acknowledgeReceipt(int id,String regid)
@@ -56,10 +63,7 @@ public class ServerUtility
 				data += "="+URLEncoder.encode(id+"","UTF-8");
 				data += "&"+URLEncoder.encode("regid","UTF-8")+"=";
 				data += URLEncoder.encode(regid,"UTF-8")+"&";
-				
-				
-				
-				
+
 				URLConnection conn = url.openConnection();
 				conn.setDoOutput(true);
 				OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
